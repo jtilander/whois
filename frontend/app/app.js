@@ -37,17 +37,23 @@ myApp.config(function($routeProvider) {
     })
 });
 
-myApp.filter('filterStyles', function() {
-  return function(input) {
-    var output = new Array();
-    for (i=0; i<input.length; i++) {
-        if (input[i].checked == true) {
-            output.push(input[i].name);
-        }
-    }
-    return output;
-  }
-});
+myApp.directive('focus',
+function($timeout) {
+ return {
+ scope : {
+   trigger : '@focus'
+ },
+ link : function(scope, element) {
+  scope.$watch('trigger', function(value) {
+    if (value === "true") {
+      $timeout(function() {
+       element[0].focus();
+      });
+   }
+ });
+ }
+};
+}); 
 
 myApp.controller(
     'mainController',
