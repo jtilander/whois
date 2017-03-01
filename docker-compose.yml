@@ -20,7 +20,7 @@ frontend:
 backend:
   build: backend
   environment:
-    - DEBUG=1
+    - DEBUG=0
   expose:
     - 5000
   volumes:

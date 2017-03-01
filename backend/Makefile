@@ -14,7 +14,7 @@ push:
 	@docker push $(DOCKER_REPO)/$(DOCKER_NAME):$(TAG)
 
 run:
-	@docker run --rm $(PORTS) $(VOLUMES) $(ENVIRONMENT) $(DOCKER_REPO)/$(DOCKER_NAME):$(TAG) debug
+	@docker run --rm $(PORTS) $(VOLUMES) $(ENVIRONMENT) $(DOCKER_REPO)/$(DOCKER_NAME):$(TAG)
 
 debug:
 	@docker run --rm -it $(PORTS) $(VOLUMES) $(ENVIRONMENT) $(DOCKER_REPO)/$(DOCKER_NAME):$(TAG) bash

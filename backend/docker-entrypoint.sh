@@ -4,10 +4,12 @@ set -e
 case "$1" in 
 	server)
 		shift
-		exec /usr/bin/python /app/whoisapi.py $*
+		echo "Starting gunicorn server"
+		exec /usr/bin/gunicorn -w $WORKER_COUNT -b 0.0.0.0:5000 whoisapi:app
 		;;
 	debug)
 		shift
+		echo "Starting development reloading server"
 		exec /usr/bin/python -u /app/whoisapi.py $*
 		;;
 	bash)

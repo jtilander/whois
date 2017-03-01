@@ -23,12 +23,24 @@
         <td>{{user.title}}</td>
     </tr>
     <tr>
+        <td>Description</td>
+        <td>{{user.description}}</td>
+    </tr>
+    <tr>
         <td>Phone</td>
         <td>{{user.phone}}</td>
     </tr>
     <tr>
+        <td>Address</td>
+        <td>{{user.address}}</td>
+    </tr>
+    <tr>
+        <td>Company</td>
+        <td>{{user.company}}</td>
+    </tr>
+    <tr>
         <td>Manager</td>
-        <td><a href="#/users/{{result.manager}}">{{user.managername}}</a></td>
+        <td><a href="#/users/{{user.manager}}">{{user.managername}}</a></td>
     </tr>
     </tbody>
 </table>

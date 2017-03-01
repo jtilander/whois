@@ -6,12 +6,15 @@ import config
 import json
 from pprint import pprint
 from elasticsearch import Elasticsearch
+import os
 
-app = Flask(__name__)
+app = Flask("whoisapi")
 CORS(app)
 api = Api(app)
 
 parser = reqparse.RequestParser()
+
+DEBUG = int(os.environ.get('DEBUG', '0'))
 
 
 class UserList(Resource):

@@ -55,3 +55,6 @@ down:
 
 kill:
 	@$(DC) $(DC_FLAGS) down -v
+
+build:
+	@$(DC) $(DC_FLAGS) build

@@ -6,9 +6,10 @@ RUN apk add --no-cache \
 		py-requests \
 		python \
 		curl \
-		bash
+		bash \
+		py-gunicorn
 
-ENV VISUAL=vi
+ENV VISUAL=vi WORKER_COUNT=8
 
 RUN pip --disable-pip-version-check --no-cache-dir install flask flask_restful flask-cors elasticsearch
 
