@@ -5,7 +5,7 @@ case "$1" in
 	server)
 		shift
 		echo "Starting gunicorn server"
-		exec /usr/bin/gunicorn -w $WORKER_COUNT -b 0.0.0.0:5000 whoisapi:app
+		exec /usr/bin/gunicorn --timeout $TIMEOUT -w $WORKER_COUNT -b 0.0.0.0:5000 whoisapi:app
 		;;
 	debug)
 		shift
