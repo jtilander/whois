@@ -13,6 +13,7 @@ VOLUME ["/data"]
 WORKDIR /app
 COPY nginx.conf /etc/nginx/
 COPY app/ /app/
+COPY 404.jpg /app/
 
 EXPOSE 80
 
