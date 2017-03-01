@@ -7,6 +7,7 @@ import json
 from pprint import pprint
 from elasticsearch import Elasticsearch
 import os
+import sys
 
 app = Flask("whoisapi")
 CORS(app)
@@ -15,12 +16,113 @@ api = Api(app)
 parser = reqparse.RequestParser()
 
 DEBUG = int(os.environ.get('DEBUG', '0'))
+INDEX_NAME = 'users'
+DOC_TYPE = 'user'
+
+INDEX_MAPPING = '''{
+    "settings": {
+        "number_of_shards": 1,
+        "number_of_replicas": 0,
+        "analysis": {
+            "filter": {
+                "autocomplete_filter": {
+                    "type": "edge_ngram",
+                    "min_gram": 2,
+                    "max_gram": 15
+                }
+            },
+            "analyzer": {
+                "autocomplete": {
+                    "type": "custom",
+                    "tokenizer": "standard",
+                    "filter": [
+                        "lowercase",
+                        "autocomplete_filter"
+                    ]
+                }
+            }
+        }
+    },
+    "mappings": {
+        "users": {
+            "properties": {
+                "fullname": {
+                    "type": "string",
+                    "index_analyzer": "autocomplete",
+                    "search_analyzer": "standard"
+                },
+                "address": {
+                    "type": "string",
+                    "index_analyzer": "autocomplete",
+                    "search_analyzer": "standard"
+                },
+                "company": {
+                    "type": "string",
+                    "index_analyzer": "autocomplete",
+                    "search_analyzer": "standard"
+                },
+                "eid": {
+                    "type": "string",
+                    "index_analyzer": "not_analyzed",
+                },
+                "email": {
+                    "type": "string",
+                    "index_analyzer": "autocomplete",
+                    "search_analyzer": "standard"
+                },
+                "manager": {
+                    "type": "string",
+                    "index_analyzer": "not_analyzed",
+                },
+                "managername": {
+                    "type": "string",
+                    "index_analyzer": "not_analyzed",
+                },
+                "office": {
+                    "type": "string",
+                    "index_analyzer": "autocomplete",
+                    "search_analyzer": "standard"
+                },
+                "path": {
+                    "type": "string",
+                    "index_analyzer": "not_analyzed",
+                },
+                "reports": {
+                    "type": "nested",
+                    "index_analyzer": "not_analyzed",
+                },
+                "tags": {
+                    "type": "nested",
+                    "index_analyzer": "not_analyzed",
+                },
+                "notes": {
+                    "type": "string",
+                    "index_analyzer": "not_analyzed",
+                },
+                "title": {
+                    "type": "string",
+                    "index_analyzer": "autocomplete",
+                    "search_analyzer": "standard"
+                },
+                "username": {
+                    "type": "string",
+                    "index_analyzer": "autocomplete",
+                    "search_analyzer": "standard"
+                },
+                "description": {
+                    "type": "string",
+                    "index_analyzer": "autocomplete",
+                    "search_analyzer": "standard"
+                }
+            }
+        }
+    }
+}'''
 
 
 class UserList(Resource):
 
     def get(self):
-        print("Call for: GET /users")
         url = config.es_base_url['users'] + '/_search'
         query = {
             "query": {
@@ -45,7 +147,6 @@ class UserList(Resource):
 class User(Resource):
 
     def get(self, user_id):
-        print("Call for: GET /users/%s" % user_id)
         url = config.es_base_url['users'] + '/user/' + user_id
         resp = requests.get(url)
         data = resp.json()
@@ -69,7 +170,7 @@ class Search(Resource):
         query = {
             "query": {
                 "multi_match": {
-                    "fields": ["username", "fullname", "description", "title", "email", "company", "office", "address"],
+                    "fields": ["username", "fullname", "title", "email", "company", "office", "address"],
                     "query": query_string['q'],
                     "type": "cross_fields",
                     "use_dis_max": False
@@ -95,11 +196,19 @@ class Reload(Resource):
         total_records = len(records)
 
         es = Elasticsearch("http://elasticsearch:9200")
+
+        print >> sys.stderr, "Deleting index %s" % INDEX_NAME
+        es.indices.delete(index=INDEX_NAME, ignore=[400, 404])
+
+        print >> sys.stderr, "Creating new mapping for index %s" % INDEX_NAME
+        es.indices.create(index=INDEX_NAME, ignore=400, body=INDEX_MAPPING)
+
+        print >> sys.stderr, "Uploading %d indices to elasticsearch..." % total_records
         for record in records:
             username = record['username']
-            es.index(index="users", doc_type='user', body=record, id=username)
-            print "Indexed user %s" % username
+            es.create(index=INDEX_NAME, doc_type=DOC_TYPE, body=record, id=username)
 
+        print >> sys.stderr, "Done."
         return {"Records": total_records}
 
 
@@ -108,6 +217,6 @@ api.add_resource(UserList, config.api_base_url + '/users')
 api.add_resource(Search, config.api_base_url + '/search')
 api.add_resource(Reload, config.api_base_url + '/reload')
 
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
-
