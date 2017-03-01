@@ -77,6 +77,20 @@ myApp.controller(
 myApp.controller(
     'userDetailsController', ['$scope', 'User', '$routeParams',
     function ($scope, User, $routeParams) {
-        $scope.user = User.get({id: $routeParams.id});
+        $scope.reports = [];
+        $scope.user = User.get({id: $routeParams.id},
+            function(user) {
+                //console.log(user);
+                for(var i=0; i < user.reports.length; i++) {
+                    var myid = user.reports[i];
+                    //console.log('"%s"',myid);
+                    if(myid.length > 0){
+                        $scope.reports.push( User.get({id: myid}) );
+                    }
+                }
+            }
+        );
+        
+
     }
 ]);

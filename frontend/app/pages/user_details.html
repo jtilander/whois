@@ -42,5 +42,11 @@
         <td>Manager</td>
         <td><a href="#/users/{{user.manager}}">{{user.managername}}</a></td>
     </tr>
+
+    <tr ng-repeat="report in reports">
+        <td>Report {{$index+1}}</td>
+        <td><a href="#/users/{{report.username}}">{{ report.fullname }}</a>  ({{report.title}})</td>
+    </tr>
+
     </tbody>
 </table>
