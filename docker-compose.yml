@@ -4,12 +4,12 @@
 frontend:
   build: frontend
   environment:
-    - DEBUG=1
+    - DEBUG=${DEBUG}
   ports:
     - 9000:80
   volumes:
     - ./frontend/app:/app
-    - ../ldapmunge/tmp:/data
+    - ${DATADIR}:/data
   links:
     - backend
     - elasticsearch
@@ -20,16 +20,14 @@ frontend:
 backend:
   build: backend
   environment:
-    - DEBUG=1
+    - DEBUG=${DEBUG}
   expose:
     - 5000
   volumes:
     - ./backend:/app
-    - ../ldapmunge/tmp:/data
+    - ${DATADIR}:/data
   links:
     - elasticsearch
-  command:
-    - debug
   log_opt:
     max-size: "1m"
     max-file: "2"

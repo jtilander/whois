@@ -18,6 +18,8 @@ parser = reqparse.RequestParser()
 DEBUG = int(os.environ.get('DEBUG', '0'))
 INDEX_NAME = 'users'
 DOC_TYPE = 'user'
+MAX_RESULTS = int(os.environ.get('MAX_RESULTS', '100'))
+
 
 INDEX_MAPPING = '''{
     "settings": {
@@ -128,7 +130,7 @@ class UserList(Resource):
             "query": {
                 "match_all": {}
             },
-            "size": 100
+            "size": MAX_RESULTS
         }
         resp = requests.post(url, data=json.dumps(query))
         data = resp.json()
@@ -140,7 +142,6 @@ class UserList(Resource):
         return users
 
     def post(self):
-        print("Call for: POST /users")
         return None
 
 
@@ -163,7 +164,8 @@ class User(Resource):
 class Search(Resource):
 
     def get(self):
-        print("Call for GET /search")
+        if DEBUG:
+            print >> sys.stderr, "Call for GET /search with max results %d" % MAX_RESULTS
         parser.add_argument('q')
         query_string = parser.parse_args()
         url = config.es_base_url['users'] + '/_search'
@@ -176,7 +178,7 @@ class Search(Resource):
                     "use_dis_max": False
                 }
             },
-            "size": 100
+            "size": MAX_RESULTS
         }
         resp = requests.post(url, data=json.dumps(query))
         data = resp.json()

@@ -1,6 +1,12 @@
 #!/bin/bash
 set -e
 
+if [ "$DEBUG" = "1" ]; then
+	shift
+	echo "Starting development reloading server"
+	exec /usr/bin/python -u /app/whoisapi.py $*
+fi
+
 case "$1" in 
 	server)
 		shift
