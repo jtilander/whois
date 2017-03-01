@@ -20,7 +20,7 @@ frontend:
 backend:
   build: backend
   environment:
-    - DEBUG=0
+    - DEBUG=1
   expose:
     - 5000
   volumes:
@@ -28,6 +28,8 @@ backend:
     - ../ldapmunge/tmp:/data
   links:
     - elasticsearch
+  command:
+    - debug
   log_opt:
     max-size: "1m"
     max-file: "2"
