@@ -1,0 +1,47 @@
+#
+# This is only for development on a local computer!!!
+#
+frontend:
+  build: frontend
+  environment:
+    - DEBUG=1
+  ports:
+    - 9000:80
+  volumes:
+    - ./frontend/app:/app
+    - ../ldapmunge/tmp:/data
+  links:
+    - backend
+    - elasticsearch
+  log_opt:
+    max-size: "1m"
+    max-file: "2"
+
+backend:
+  build: backend
+  environment:
+    - DEBUG=1
+  expose:
+    - 5000
+  volumes:
+    - ./backend:/app
+    - ../ldapmunge/tmp:/data
+  links:
+    - elasticsearch
+  log_opt:
+    max-size: "1m"
+    max-file: "2"
+
+elasticsearch:
+  image: elasticsearch:5.2.1
+  environment:
+    - "http.host=0.0.0.0"
+    - "transport.host=127.0.0.1"
+  expose:
+    - 9200
+    - 9300
+  volumes:
+    - ./tmp/esdata:/usr/share/elasticsearch/data
+  log_opt:
+    max-size: "1m"
+    max-file: "2"
