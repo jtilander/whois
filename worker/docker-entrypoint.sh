@@ -2,8 +2,7 @@
 set -e
 
 WORKERS=8
-#HUEY_OPTIONS="--worker-type greenlet --workers ${WORKERS} ops.huey"
-HUEY_OPTIONS="--workers ${WORKERS} ops.huey"
+HUEY_OPTIONS="--worker-type process --workers ${WORKERS} ops.huey"
 
 if [ "$DEBUG" = "1" ]; then
 	shift
