@@ -1,22 +1,29 @@
 #!/bin/bash
 set -e
 
-if [ "$DEBUG" = "1" ]; then
-	shift
-	echo "Starting development reloading server"
-	exec /usr/bin/python -u /app/whoisapi.py $*
-fi
 
 case "$1" in 
 	server)
 		shift
-		echo "Starting gunicorn server"
-		exec /usr/bin/gunicorn --timeout $TIMEOUT -w $WORKER_COUNT -b 0.0.0.0:5000 whoisapi:app
+		if [ "$DEBUG" = "1" ]; then
+			echo "Starting development reloading server"
+			exec /usr/bin/python -u /app/whoisapi.py $*
+		else
+			echo "Starting gunicorn server"
+			exec /usr/bin/gunicorn --timeout $TIMEOUT -w $WORKER_COUNT -b 0.0.0.0:5000 whoisapi:app
+		fi
 		;;
-	debug)
+	worker)
 		shift
-		echo "Starting development reloading server"
-		exec /usr/bin/python -u /app/whoisapi.py $*
+
+		HUEY_OPTIONS="--worker-type process --workers ${WORKER_COUNT} --localtime ops.huey" 
+
+		if [ "$DEBUG" = "1" ]; then
+			HUEY_OPTIONS="--verbose ${HUEY_OPTIONS}"
+		fi
+
+		echo "Starting huey worker"
+		exec /usr/bin/python -u /usr/bin/huey_consumer.py ${HUEY_OPTIONS} $*
 		;;
 	bash)
 		shift

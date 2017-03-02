@@ -5,6 +5,7 @@ RUN apk add --no-cache \
 		py-raven \
 		py-requests \
 		py-redis \
+		py2-pyldap \
 		python \
 		curl \
 		bash \

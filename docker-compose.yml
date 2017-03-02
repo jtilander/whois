@@ -21,6 +21,7 @@ backend:
   build: backend
   environment:
     - DEBUG=${DEBUG}
+    - WORKER_COUNT=6
   expose:
     - 5000
   volumes:
@@ -32,11 +33,14 @@ backend:
   log_opt:
     max-size: "1m"
     max-file: "2"
+  command:
+    - server
 
 worker:
-  build: worker
+  build: backend
   environment:
     - DEBUG=${DEBUG}
+    - WORKER_COUNT=3
   volumes:
     - ./backend:/app
     - ${DATADIR}:/data
@@ -45,6 +49,8 @@ worker:
   log_opt:
     max-size: "1m"
     max-file: "2"
+  command:
+    - worker
 
 elasticsearch:
   image: elasticsearch:5.2.1
