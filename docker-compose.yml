@@ -28,6 +28,20 @@ backend:
     - ${DATADIR}:/data
   links:
     - elasticsearch
+    - redis
+  log_opt:
+    max-size: "1m"
+    max-file: "2"
+
+worker:
+  build: worker
+  environment:
+    - DEBUG=${DEBUG}
+  volumes:
+    - ./backend:/app
+    - ${DATADIR}:/data
+  links:
+    - redis
   log_opt:
     max-size: "1m"
     max-file: "2"
@@ -42,6 +56,12 @@ elasticsearch:
     - 9300
   volumes:
     - ./tmp/esdata:/usr/share/elasticsearch/data
+  log_opt:
+    max-size: "1m"
+    max-file: "2"
+
+redis:
+  image: redis:alpine
   log_opt:
     max-size: "1m"
     max-file: "2"
