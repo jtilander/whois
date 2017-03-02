@@ -1,7 +1,8 @@
 .PHONY: iterate up down kill build clean
 
 export DEBUG?=0
-export DATADIR?=../ldapmunge/tmp
+export DATADIR?=./tmp/data
+#export DATADIR?=../ldapmunge/tmp
 
 DC=docker-compose
 DC_FLAGS="-p whois"
@@ -21,4 +22,4 @@ build:
 	@$(DC) $(DC_FLAGS) build
 
 clean:
-	rm -rf ./tmp && mkdir -p ./tmp
+	rm -rf ./tmp && mkdir -p ./tmp/data

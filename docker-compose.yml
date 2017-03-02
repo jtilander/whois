@@ -22,6 +22,10 @@ backend:
   environment:
     - DEBUG=${DEBUG}
     - WORKER_COUNT=6
+    - LDAP_USERNAME=${LDAP_USERNAME}
+    - LDAP_PASSWORD=${LDAP_PASSWORD}
+    - LDAP_SERVER=${LDAP_SERVER}
+    - LDAP_BASE_DN=${LDAP_BASE_DN}
   expose:
     - 5000
   volumes:

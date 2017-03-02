@@ -17,7 +17,7 @@ run:
 	@docker run --rm $(PORTS) $(VOLUMES) $(ENVIRONMENT) $(DOCKER_REPO)/$(DOCKER_NAME):$(TAG)
 
 debug:
-	@docker run --rm -it $(PORTS) $(VOLUMES) $(ENVIRONMENT) $(DOCKER_REPO)/$(DOCKER_NAME):$(TAG) bash
+	@docker run --rm -it $(DOCKER_REPO)/$(DOCKER_NAME):$(TAG) bash
 
 clean:
 	@echo "Clean"
