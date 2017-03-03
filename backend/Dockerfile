@@ -28,8 +28,8 @@ RUN mkdir /data && mkdir /input && mkdir /app && mkdir /app/tasks && mkdir /app/
 VOLUME ["/data", "/input"]
 
 COPY *.py /app/
-COPY scripts/*.py /app/scripts/
-COPY tasks/*.py /app/tasks/
+COPY scripts/* /app/scripts/
+COPY tasks/* /app/tasks/
 
 WORKDIR /app
 

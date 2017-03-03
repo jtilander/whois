@@ -92,7 +92,14 @@ class Search(Resource):
 class Populate(Resource):
 
     def post(self):
-        ops.populate()
+        parser.add_argument('dump')
+        query_string = parser.parse_args()
+
+        dump = 'yes' == query_string.get('dump', 'no').lower()
+
+        print >> sys.stderr, "Populating index (Pull raw LDAP data: %s)" % dump
+        ops.populate(dump)
+
         return {"result": "enqueued"}
 
 

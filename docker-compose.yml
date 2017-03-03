@@ -62,9 +62,9 @@ elasticsearch:
   environment:
     - "http.host=0.0.0.0"
     - "transport.host=127.0.0.1"
-  expose:
-    - 9200
-    - 9300
+  ports:
+    - 9200:9200
+    - 9300:9300
   volumes:
     - ./tmp/esdata:/usr/share/elasticsearch/data
   log_opt:

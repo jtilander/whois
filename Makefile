@@ -2,7 +2,6 @@
 
 export DEBUG?=0
 export DATADIR?=./tmp/data
-#export DATADIR?=../ldapmunge/tmp
 
 DC=docker-compose
 DC_FLAGS="-p whois"
@@ -21,5 +20,8 @@ kill:
 build:
 	@$(DC) $(DC_FLAGS) build
 
+# Clean through a docker container
 clean:
-	rm -rf ./tmp && mkdir -p ./tmp/data
+	docker run --rm -v "`pwd`/tmp:/mnt" alpine:3.5 /bin/sh -c 'rm -f /mnt/data/photos/*'
+	docker run --rm -v "`pwd`/tmp:/mnt" alpine:3.5 /bin/sh -c 'rm -f /mnt/data/users.json'
+	docker run --rm -v "`pwd`/tmp:/mnt" alpine:3.5 /bin/sh -c 'rm -rf /mnt/esdata'
