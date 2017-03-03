@@ -6,7 +6,9 @@ Please note that this is just a toy tesdbed for me to tinker with ES.
 
 ## Usage
 
-Please use ldapdump and ldapmunge to create the data that needs to finally be uploaded with a call to reload. A sample script might look like this:
+Please POST to /api/v1/populate to initiate a pull from Active Directory and parse it into the internal database. 
+
+This will effectivly do the following:
 
 ```
 set -e
@@ -36,7 +38,8 @@ rm -rf $TMPDIR
 curl -Ss -X POST https://users.mycompany.com/api/v1/reload
 ```
 
-You can stick the above in a periodic script that runs somewhere. It's assumed that /mnt/ldap is accessible and mounted as /data on the backend container.
+
+Now, the backend service need to be configured with the correct environment for the LDAP_* environment variables for this to work. Please refer to the docker-compose.yml file.
 
 
 ## Development
