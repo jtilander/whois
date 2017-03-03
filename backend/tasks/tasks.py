@@ -9,115 +9,6 @@ USER_JSON_FILENAME = '/data/users.json'
 INDEX_NAME = 'users'
 DOC_TYPE = 'user'
 
-INDEX_MAPPING = '''{
-    "settings": {
-        "number_of_shards": 1,
-        "number_of_replicas": 0,
-        "analysis": {
-            "filter": {
-                "autocomplete_filter": {
-                    "type": "edge_ngram",
-                    "min_gram": 3,
-                    "max_gram": 40
-                }
-            },
-            "analyzer": {
-                "autocomplete": {
-                    "type": "custom",
-                    "tokenizer": "standard",
-                    "filter": [
-                        "standard",
-                        "lowercase",
-                        "autocomplete_filter"
-                    ]
-                },
-                "mysearch": {
-                    "type": "custom",
-                    "tokenizer": "standard",
-                    "filter": [
-                        "standard",
-                        "lowercase"
-                    ]
-                }
-            }
-        }
-    },
-    "mappings": {
-        "users": {
-            "properties": {
-                "fullname": {
-                    "type": "text",
-                    "analyzer": "autocomplete",
-                    "search_analyzer": "mysearch"
-                },
-                "address": {
-                    "type": "text",
-                    "analyzer": "autocomplete",
-                    "search_analyzer": "mysearch"
-                },
-                "company": {
-                    "type": "text",
-                    "analyzer": "autocomplete",
-                    "search_analyzer": "mysearch"
-                },
-                "eid": {
-                    "type": "text",
-                    "analyzer": "keyword"
-                },
-                "email": {
-                    "type": "text",
-                    "analyzer": "autocomplete",
-                    "search_analyzer": "mysearch"
-                },
-                "manager": {
-                    "type": "text",
-                    "analyzer": "keyword"
-                },
-                "managername": {
-                    "type": "text",
-                    "analyzer": "keyword"
-                },
-                "office": {
-                    "type": "text",
-                    "analyzer": "autocomplete",
-                    "search_analyzer": "mysearch"
-                },
-                "path": {
-                    "type": "text",
-                    "analyzer": "keyword"
-                },
-                "reports": {
-                    "type": "text",
-                    "analyzer": "keyword"
-                },
-                "tags": {
-                    "type": "text",
-                    "analyzer": "keyword"
-                },
-                "notes": {
-                    "type": "text",
-                    "analyzer": "keyword"
-                },
-                "title": {
-                    "type": "text",
-                    "analyzer": "autocomplete",
-                    "search_analyzer": "mysearch"
-                },
-                "username": {
-                    "type": "text",
-                    "analyzer": "autocomplete",
-                    "search_analyzer": "mysearch"
-                },
-                "description": {
-                    "type": "text",
-                    "analyzer": "autocomplete",
-                    "search_analyzer": "mysearch"
-                }
-            }
-        }
-    }
-}'''
-
 
 @huey.task()
 def update_from_ldap(server, username, password, schema, pull):
@@ -168,7 +59,11 @@ def update_from_ldap(server, username, password, schema, pull):
             es.indices.delete(index=INDEX_NAME, ignore=[400, 404])
 
             print >> sys.stderr, "[%5d] Creating new mapping for index %s" % (pid, INDEX_NAME)
-            es.indices.create(index=INDEX_NAME, ignore=400, body=INDEX_MAPPING)
+            # es.indices.create(index=INDEX_NAME, ignore=400, body=INDEX_MAPPING)
+            command = '''curl -Ss -XPUT 'http://elasticsearch:9200/users' -H 'Content-Type: application/json' -d "@/app/scripts/index.json"'''
+            if 0 != os.system(command):
+                print >> sys.stderr, '[%5d] Upload of index failed, aborting' % (pid)
+                return None
 
             print >> sys.stderr, "[%5d] Uploading %d indices to elasticsearch..." % (pid, total_records)
             for record in records:
