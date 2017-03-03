@@ -82,6 +82,19 @@ myApp.controller('userDetailsController', ['$scope', 'User', '$routeParams',
         $scope.reports = [];
         $scope.user = User.get({ id: $routeParams.id },
             function(user) {
+                
+                // Some query strings that we can replace for the bottom
+                // search links we provide on the details page.
+                var name = user.fullname.replace(' ', '+');
+                var email = /@([^\.]+)/.exec(user.email)[1];
+                var company = user.company
+                                .replace(', INC', '')
+                                .replace('.', '')
+                                .replace(' ', '+');
+                $scope.linkedinsearchstring = name + '+' + company + '+' + email;
+                $scope.namesearchstring = name;
+
+                // We can now also go through the list of reports and populate that list
                 for (var i = 0; i < user.reports.length; i++) {
                     var myid = user.reports[i];
                     if (myid.length > 0) {

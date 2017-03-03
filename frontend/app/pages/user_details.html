@@ -9,10 +9,6 @@
     </thead>
     <tbody>
         <tr>
-            <td>Fullname</td>
-            <td>{{user.fullname}}</td>
-        </tr>
-        <tr>
             <td>Email</td>
             <td><a href="mailto:{{user.email}}">{{user.email}}</a></td>
         </tr>
@@ -46,3 +42,9 @@
         </tr>
     </tbody>
 </table>
+
+[
+    <a ng-href="https://www.google.com/#q=site:linkedin.com+{{linkedinsearchstring}}">Linkedin search</a> 
+    |
+    <a ng-href="https://www.google.com/#q={{namesearchstring}}">Google search</a> 
+]
