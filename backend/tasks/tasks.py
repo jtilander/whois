@@ -111,7 +111,7 @@ INDEX_MAPPING = '''{
 
 
 @huey.task()
-def update_from_ldap(server, username, password, schema):
+def update_from_ldap(server, username, password, schema, pull):
     pid = os.getpid()
 
     print >> sys.stderr, '[%5d] Aquire lock...' % pid
@@ -123,25 +123,32 @@ def update_from_ldap(server, username, password, schema):
             print >> sys.stderr, '[%5d] Got lock, now running ldap update...' % pid
             print >> sys.stderr, '[%5d] Server: %s, Username: %s, Schema: %s' % (pid, server, username, schema)
 
-            os.environ['LDAP_USERNAME'] = username
-            os.environ['LDAP_PASSWORD'] = password
-            os.environ['LDAP_SERVER'] = server
-            os.environ['LDAP_BASE_DN'] = schema
+            if pull:
+                os.environ['LDAP_USERNAME'] = username
+                os.environ['LDAP_PASSWORD'] = password
+                os.environ['LDAP_SERVER'] = server
+                os.environ['LDAP_BASE_DN'] = schema
 
-            command = '/usr/bin/python /app/scripts/ldapdump.py'
+                command = '/usr/bin/python /app/scripts/ldapdump.py'
 
-            print >> sys.stderr, '[%5d] Execute: %s' % (pid, command)
+                print >> sys.stderr, '[%5d] Execute: %s' % (pid, command)
 
-            os.system(command)
+                ret = os.system(command)
 
-            os.environ['LDAP_USERNAME'] = ''
-            os.environ['LDAP_PASSWORD'] = ''
-            os.environ['LDAP_SERVER'] = ''
-            os.environ['LDAP_BASE_DN'] = ''
+                os.environ['LDAP_USERNAME'] = ''
+                os.environ['LDAP_PASSWORD'] = ''
+                os.environ['LDAP_SERVER'] = ''
+                os.environ['LDAP_BASE_DN'] = ''
+
+                if ret != 0:
+                    print >> sys.stderr, '[%5d] Dump failed, aborting' % (pid)
+                    return None
 
             command = '/usr/bin/python /app/scripts/ldapmunge.py'
             print >> sys.stderr, '[%5d] Execute: %s' % (pid, command)
-            os.system(command)
+            if 0 != os.system(command):
+                print >> sys.stderr, '[%5d] Munge failed, aborting' % (pid)
+                return None
 
             records = json.load(open(USER_JSON_FILENAME))
             total_records = len(records)

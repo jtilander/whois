@@ -4,6 +4,7 @@ import ldap
 import logging
 import json
 import pickle
+import sys
 
 DEBUG = int(os.environ.get("DEBUG", "0"))
 LDAP_SERVER = 'ldap://%s' % os.environ.get('LDAP_SERVER', 'no_server_selected')
@@ -239,7 +240,7 @@ def ldap_login(username, password):
     return True, 'Successfully authenticated', ldap_client
 
 
-if __name__ == '__main__':
+def main():
     username = os.environ.get('LDAP_USERNAME')
     password = os.environ.get('LDAP_PASSWORD')
 
@@ -258,3 +259,8 @@ if __name__ == '__main__':
 
     # jsonstring = json.dumps(users, sort_keys=True, indent=4, separators=(',', ': '), ensure_ascii=False)
     # open("/data/users.json", "wt").write(jsonstring)
+    return 0
+
+
+if __name__ == '__main__':
+    sys.exit(main())
