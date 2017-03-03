@@ -50,6 +50,7 @@ worker:
     - ${DATADIR}:/data
   links:
     - redis
+    - elasticsearch
   log_opt:
     max-size: "1m"
     max-file: "2"
