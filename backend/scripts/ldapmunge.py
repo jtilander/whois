@@ -7,7 +7,7 @@ import pickle
 from pprint import pprint
 
 DEBUG = int(os.environ.get("DEBUG", "0"))
-PICKLENAME = '/input/users.pkl'
+PICKLENAME = '/data/users.pkl'
 FORMAT = '%(asctime)-15s %(levelname)-8s %(message)s'
 PHOTO_DIR = '/data/photos'
 TARGETFILE = '/data/users.json'
