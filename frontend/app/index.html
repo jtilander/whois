@@ -8,42 +8,38 @@
     <script src="static/angular-1.4.3/angular-resource.min.js"></script>
     <script type="text/javascript" src="app.js"></script>
     <link rel="stylesheet" href="static/bootstrap-3.3.5/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
-    <header>
-        <nav class="navbar navbar-default">
+    <div id="wrapper">
+        <div id="header">
+            <header>
+                <nav class="navbar navbar-default">
+                    <div class="container">
+                        <div class="navbar-header">
+                            <a href="#/" class="navbar-brand"> <span class="glyphicon glyphicon-home"> Whois </a> 
+                        </div>
+                    </div>
+                </nav>
+            </header>
+        </div>
+        <div id="content">
             <div class="container">
-                <div class="navbar-header">
-                    <a href="#/" class="navbar-brand"> <span class="glyphicon glyphicon-home"> Whois </a> 
-                </div>
+                <div ng-view></div>
             </div>
-        </nav>
-    </header>
-
- 
-    <div class="container">
-        <div ng-view></div>
-    </div>
-
-    <br/>
-    <br/>
-    <br/>
-    <br/>
-    <br/>
-    <br/>
-    <br/>
-    <hr/>
-
-    <div class="footer">
-      <div class="container">
-        <p>
-            <div class="floatleft">
-                Written by Jim Tilander
+        </div>
+        <div id="footer">
+            <div class="footer" ng-controller="footerController">
+              <div class="container">
+                <p>
+                    <div class="floatleft">
+                        Indexing {{health.users}} users found on {{health.controller}} at {{health.refreshed}}. Written by Jim Tilander 2017.
+                    </div>
+                </p>
+              </div>
             </div>
-        </p>
-      </div>
+        </div>
     </div>
-
 </body>
 </html>

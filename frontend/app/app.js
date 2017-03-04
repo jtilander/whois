@@ -8,12 +8,6 @@ services
             get: { method: 'GET' }
         });
     })
-    .factory('Users', function($resource) {
-        return $resource(baseURL + '/users', {}, {
-            query: { method: 'GET', isArray: true },
-            create: { method: 'POST', }
-        });
-    })
     .factory('Search', function($resource) {
         return $resource(baseURL + '/search', { q: '@q' }, {
             query: { method: 'GET', isArray: true }
@@ -25,10 +19,6 @@ myApp.config(function($routeProvider) {
         .when('/', {
             templateUrl: 'pages/main.html',
             controller: 'mainController'
-        })
-        .when('/users', {
-            templateUrl: 'pages/users.html',
-            controller: 'userListController'
         })
         .when('/users/:id', {
             templateUrl: 'pages/user_details.html',
@@ -54,7 +44,7 @@ myApp.directive('focus',
         };
     });
 
-myApp.controller('mainController',
+myApp.controller('mainController', ['$scope', 'Search',
     function($scope, Search) {
         $scope.search = function() {
             q = $scope.searchString;
@@ -63,19 +53,7 @@ myApp.controller('mainController',
             }
         };
     }
-);
-
-myApp.controller('userListController',
-    function($scope, Users, User, $location, $timeout) {
-        if ($location.search().hasOwnProperty('created')) {
-            $scope.created = $location.search()['created'];
-        }
-        if ($location.search().hasOwnProperty('deleted')) {
-            $scope.deleted = $location.search()['deleted'];
-        }
-        $scope.users = User.query();
-    }
-);
+]);
 
 myApp.controller('userDetailsController', ['$scope', 'User', '$routeParams',
     function($scope, User, $routeParams) {
@@ -103,5 +81,15 @@ myApp.controller('userDetailsController', ['$scope', 'User', '$routeParams',
                 }
             }
         );
+    }
+]);
+
+
+myApp.controller('footerController', ['$scope', '$http',
+    function($scope, $http) {
+        $http.get(baseURL + '/health').then( function(response) {
+            $scope.health = response.data;
+            console.log($scope.health);
+        });
     }
 ]);

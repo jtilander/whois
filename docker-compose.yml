@@ -43,7 +43,7 @@ backend:
 worker:
   build: backend
   environment:
-    - DEBUG=${DEBUG}
+    - DEBUG_=${DEBUG}
     - WORKER_COUNT=3
   volumes:
     - ./backend:/app

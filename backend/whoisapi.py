@@ -9,6 +9,7 @@ from elasticsearch import Elasticsearch
 import os
 import sys
 import ops
+import datetime
 
 app = Flask("whoisapi")
 CORS(app)
@@ -103,10 +104,32 @@ class Populate(Resource):
         return {"result": "enqueued"}
 
 
+class Health(Resource):
+
+    def get(self):
+        url = config.es_base_url['users'] + '/user/_count'
+        resp = requests.post(url)
+        data = resp.json()
+
+        result = dict()
+        result['users'] = data['count']
+
+        result['controller'] = os.environ.get('LDAP_SERVER', '')
+        result['domain'] = os.environ.get('LDAP_BASE_DN', '')
+
+        updated = ''
+        if os.path.isfile('/data/users.pkl'):
+            updated = datetime.datetime.fromtimestamp(os.path.getmtime('/data/users.pkl')).strftime('%Y-%m-%d %H:%M')
+        result['refreshed'] = updated
+
+        return result
+
+
 api.add_resource(User, config.api_base_url + '/users/<user_id>')
 api.add_resource(UserList, config.api_base_url + '/users')
 api.add_resource(Search, config.api_base_url + '/search')
 api.add_resource(Populate, config.api_base_url + '/populate')
+api.add_resource(Health, config.api_base_url + '/health')
 
 
 if __name__ == '__main__':
