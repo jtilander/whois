@@ -1,0 +1,71 @@
+frontend:
+  image: jtilander/whois_frontend:latest
+  environment:
+    - "DEBUG=${debug}"
+  expose:
+    - 80
+  volumes:
+    - ${mountpoint}:/data
+  links:
+    - backend
+    - elasticsearch
+  log_opt:
+    max-size: "1m"
+    max-file: "2"
+
+backend:
+  image: jtilander/whois_backend:latest
+  environment:
+    - "DEBUG=${debug}"
+    - "TIMEOUT=${timeout}"
+    - "WORKER_COUNT=${api_workers}"
+    - "LDAP_USERNAME=${ldap_username}"
+    - "LDAP_PASSWORD=${ldap_password}"
+    - "LDAP_SERVER=${ldap_server}"
+    - "LDAP_BASE_DN=${ldap_base_dn}"
+  expose:
+    - 5000
+  volumes:
+    - ${mountpoint}:/data
+  links:
+    - elasticsearch
+    - redis
+  log_opt:
+    max-size: "1m"
+    max-file: "2"
+
+worker:
+  image: jtilander/whois_backend:latest
+  environment:
+    - "DEBUG=${DEBUG}"
+    - "WORKER_COUNT=${queue_workers}"
+  volumes:
+    - ${mountpoint}:/data
+  links:
+    - redis
+    - elasticsearch
+  log_opt:
+    max-size: "1m"
+    max-file: "2"
+  command:
+    - worker
+
+elasticsearch:
+  image: elasticsearch:5.2.1
+  environment:
+    - "http.host=0.0.0.0"
+    - "transport.host=127.0.0.1"
+  expose:
+    - 9200
+    - 9300
+  volumes:
+    - ${localmountpoint}:/usr/share/elasticsearch/data
+  log_opt:
+    max-size: "1m"
+    max-file: "2"
+
+redis:
+  image: redis:alpine
+  log_opt:
+    max-size: "1m"
+    max-file: "2"

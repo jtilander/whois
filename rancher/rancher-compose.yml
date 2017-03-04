@@ -1,0 +1,66 @@
+.catalog:
+  name: "Whois user directory"
+  version: "0.0.1"
+  description: "A directory service for looking up users"
+  questions:
+
+    - variable: debug
+      description: "Debug level"
+      label: "Debug"
+      type: "int"
+      required: true
+      default: 0
+    - variable: timeout
+      description: "Timeout in seconds"
+      label: "Timeout"
+      type: "int"
+      required: true
+      default: 300
+    - variable: api_workers
+      description: "How many web api workers we are going to spin up"
+      label: "Api Workers"
+      type: "int"
+      required: true
+      default: 6
+    - variable: queue_workers
+      description: "How many queue workers we are going to spin up on each server"
+      label: "Queue Workers"
+      type: "int"
+      required: true
+      default: 3
+    - variable: mountpoint
+      description: "Where to store the persistent json files and web images"
+      label: "Mountpoint"
+      type: "string"
+      required: true
+      default: "/mnt/docker/rancher/ldap"
+    - variable: localmountpoint
+      description: "Where to store the persistent elasticsearch data"
+      label: "LocalMountpoint"
+      type: "string"
+      required: true
+      default: "/mnt/datavolumes/ldap"
+    - variable: ldap_username
+      description: "Username we use to login to the LDAP server"
+      label: "Username"
+      type: "string"
+      required: true
+      default: "serviceaccount@mycompany.com"
+    - variable: ldap_password
+      description: "Password we use to login to the LDAP server"
+      label: "Password"
+      type: "password"
+      required: true
+      default: "passw0rd1"
+    - variable: ldap_server
+      description: "LDAP server we are going to dump info from"
+      label: "LDAP Server"
+      type: "string"
+      required: true
+      default: "dc.mycompany.com"
+    - variable: ldap_bind_dn
+      description: "LDAP DN to filter for"
+      label: "LDAP Bind DN"
+      type: "string"
+      required: true
+      default: "dc=mycompany, dc=com"

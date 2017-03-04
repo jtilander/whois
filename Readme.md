@@ -2,45 +2,23 @@
 
 List user relations and notes from Active Directory. This is a testbed for running elastic search on a large (a couple of thousand) directory of users. 
 
-Please note that this is just a toy tesdbed for me to tinker with ES.
+Started out as a testbed for elasticsearch and more "modern" web development with queues, es, docker and nginx. Now it's perhaps just a very simple and static directory browser.
 
-## Usage
+## Deploy
 
-Please POST to /api/v1/populate to initiate a pull from Active Directory and parse it into the internal database. 
+Easiest way is to deploy this on rancher. There is a sample catalog entry in the ./rancher directory. The rancher template will ask a whole bunch of questions, and after filling them out the services should be launched. 
 
-This will effectivly do the following:
+## Populating data
+
+At first when you start the service, there will be no data loaded. You will need to hit the endpoint to populate data:
 
 ```
-set -e
-
-DOCKER_LDAPDUMP=jtilander/ldapdump
-DOCKER_LDAPMUNGE=jtilander/ldapmunge
-TARGET_DATA_DIR=/mnt/ldap
-LDAP_SERVER=mydc.company.com
-LDAP_BASE_DN="dc=company, dc=com"
-
-TMPDIR=/tmp/$BUILD_TAG
-
-if [ ! -d $TMPDIR ]; then
-    mkdir $TMPDIR
-fi
-
-# Connect to AD and dump out users.pkl
-docker run --rm -v $TMPDIR/dump:/data -e "LDAP_USERNAME=${LDAP_USERNAME}" -e "LDAP_PASSWORD=${LDAP_PASSWORD}" -e "LDAP_SERVER=${LDAP_SERVER}" -e "LDAP_BASE_DN=${LDAP_BASE_DN}" ${DOCKER_LDAPDUMP}
-
-# Transform users.pkl into users.json and a bunch of user images
-docker run --rm -v $TMPDIR/dump:/input -v $TARGET_DATA_DIR:/data $DOCKER_LDAPMUNGE
-
-# This is where the pickle structure was stored, we don't need it anymore.
-rm -rf $TMPDIR
-
-# Now that we've stored the new data in the right place, let's kick the server to reload all of our data.
-curl -Ss -X POST https://users.mycompany.com/api/v1/reload
+curl -X POST http://whois.mycompany.com/api/v1/populate?dump=yes
 ```
 
+You can stick this in a cronjob somewhere to run each night, or as often as you need it to. 
 
-Now, the backend service need to be configured with the correct environment for the LDAP_* environment variables for this to work. Please refer to the docker-compose.yml file.
-
+It's a little bit naive right now -- it deletes the entire database and then rebuild it from scratch. So for a little while, it will look like the database is broken or empty. For some 30k users, this takes a couple of minutes so it shouldn't be a big deal.
 
 ## Development
 
@@ -51,4 +29,34 @@ The backend python flask app will be booted up in a debug single threaded mode, 
 The webpages will also be mapped to the live versions on your disk. 
 
 You should be able to live load both pages and backend code.
+
+You will need to set a couple of environment variables, e.g. 
+
+```
+export LDAP_SERVER=domaincontroller.mycompany.com
+export LDAP_BASE_DN="dc=mycompany, dc=com"
+export LDAP_USERNAME=serviceaccount@mycompany.com
+export LDAP_PASSWORD=password
+```
+
+In order to boot this up locally you need to set the environment variable DEBUG=1. E.g. 
+
+```
+DEBUG=1 make up
+```
+
+In order to iterate, just type:
+
+```
+DEBUG=1 make
+```
+
+This will bring up the entire stack, and map the live source code for the frontend and the backend into the containers.
+
+
+During development you might want to reset the data in elasticsearch, but not necessarily re-download the data from your active directory server. This can be done by hitting this URL:
+
+```
+curl -X POST http://localhost:9000/api/v1/populate?dump=no
+```
 
