@@ -1,7 +1,8 @@
 FROM alpine:3.5
 
 RUN apk add --no-cache \
-		nginx
+		nginx \
+		bash
 
 ENV VISUAL=vi
 RUN mkdir -p /var/log/nginx
