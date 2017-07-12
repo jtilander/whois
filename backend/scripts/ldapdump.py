@@ -206,6 +206,7 @@ def get_ad_users(username, password):
         new['path'] = attributes.get('distinguishedName', [''])[0]
         new['title'] = attributes.get('title', [''])[0]
         new['company'] = attributes.get('company', [''])[0]
+        new['hiredate'] = attributes.get('WhenMailboxCreated', [''])[0]
 
         users.append(new)
 

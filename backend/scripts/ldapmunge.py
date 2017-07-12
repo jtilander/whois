@@ -43,7 +43,7 @@ def transform_users(ldap_results):
         new['office'] = attributes.get('physicalDeliveryOfficeName', [''])[0]
         new['notes'] = ''
         new['tags'] = ['']
-        # new['orig'] = candidate
+        new['hiredate'] = attributes.get('WhenMailboxCreated', [''])[0]
 
         users.append(new)
 
