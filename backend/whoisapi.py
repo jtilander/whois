@@ -96,7 +96,14 @@ class Populate(Resource):
         parser.add_argument('dump')
         query_string = parser.parse_args()
 
-        dump = 'yes' == query_string.get('dump', 'no').lower()
+        dump = False
+        dumpstr = query_string.get('dump', 'no')
+        if dumpstr is None:
+            dump = False
+        elif dumpstr.lower() == 'yes':
+            dump = True
+        elif dumpstr == '1':
+            dump = True
 
         print >> sys.stderr, "Populating index (Pull raw LDAP data: %s)" % dump
         ops.populate(dump)
