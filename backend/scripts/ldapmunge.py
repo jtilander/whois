@@ -122,7 +122,7 @@ def transform_paths(records):
                 translated.append(lookup[x])
             except KeyError:
                 logging.warning('Could not find employee: %s. Skipping as a report for %s' % (x, record['username']))
-        record['reports'] = translated
+        record['reports'] = [x for x in translated if len(x.strip()) > 0]
 
 
 def debug():

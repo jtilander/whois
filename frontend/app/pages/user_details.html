@@ -42,7 +42,7 @@
         </tr>
         <tr ng-repeat="report in reports">
             <td>Report {{$index+1}}</td>
-            <td><a href="#/users/{{report.username}}">{{ report.fullname }}</a> ({{report.title}})</td>
+	    <td><a href="#/users/{{report.username}}">{{ report.fullname }}</a> ({{report.title}}) <span ng-if="report.reports.length > 0">[{{report.reports.length}}]</span> </td>
         </tr>
     </tbody>
 </table>
