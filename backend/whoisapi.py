@@ -4,8 +4,6 @@ from flask_cors import CORS
 import requests
 import config
 import json
-from pprint import pprint
-from elasticsearch import Elasticsearch
 import os
 import sys
 import ops
@@ -71,7 +69,7 @@ class Search(Resource):
         query = {
             "query": {
                 "multi_match": {
-                    "fields": ["username", "fullname", "title", "email", "company", "office", "address"],
+                    "fields": ["username", "fullname", "title", "email", "company", "office", "address", "description"],
                     "query": query_string['q'],
                     "type": "cross_fields",
                     "use_dis_max": False
@@ -82,7 +80,6 @@ class Search(Resource):
         resp = requests.post(url, data=json.dumps(query))
         data = resp.json()
         users = []
-        # pprint(data)
         for hit in data['hits']['hits']:
             user = hit['_source']
             user['id'] = hit['_id']
