@@ -194,26 +194,6 @@ def ldap_list_users(username, password):
     return results
 
 
-def get_ad_users(username, password):
-    results = ldap_list_users(username, password)
-    users = []
-    for candidate in results:
-        new = {}
-        attributes = candidate[1]
-        new['email'] = attributes.get('mail', [''])[0].lower()
-        new['username'] = attributes.get('sAMAccountName', [''])[0].lower()
-        new['fullname'] = " ".join(reversed([x.strip() for x in attributes.get('displayName', [''])[0].split(', ')]))
-        new['path'] = attributes.get('distinguishedName', [''])[0]
-        new['title'] = attributes.get('title', [''])[0]
-        new['company'] = attributes.get('company', [''])[0]
-        new['hiredate'] = attributes.get('WhenMailboxCreated', [''])[0]
-
-        users.append(new)
-
-    users.sort(key=lambda x: x['fullname'])
-    return users
-
-
 def ldap_login(username, password):
     """
     Verifies credentials for username and password.
@@ -245,7 +225,6 @@ def main():
     username = os.environ.get('LDAP_USERNAME')
     password = os.environ.get('LDAP_PASSWORD')
 
-    # users = get_ad_users(username, password)
     print "Connecting to %s as %s and dumping all the users matching '%s'..." % (LDAP_SERVER, username, LDAP_BASE_DN)
     users = ldap_list_users(username, password)
     # pprint(users)

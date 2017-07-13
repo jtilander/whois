@@ -83,6 +83,10 @@
                     "type": "text",
                     "analyzer": "keyword"
                 },
+                "hiredate": {
+                    "type": "text",
+                    "analyzer": "keyword"
+                },
                 "notes": {
                     "type": "text",
                     "analyzer": "keyword"

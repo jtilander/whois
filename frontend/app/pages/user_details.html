@@ -33,6 +33,10 @@
             <td>{{user.company}}</td>
         </tr>
         <tr>
+            <td>Time with company</td>
+	    <td>{{time_at_company |number:1}} years</td>
+        </tr>
+        <tr>
             <td>Manager</td>
             <td><a href="#/users/{{user.manager}}">{{user.managername}}</a></td>
         </tr>

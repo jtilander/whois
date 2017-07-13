@@ -57,10 +57,10 @@ myApp.controller('mainController', ['$scope', 'Search',
 
 myApp.controller('userDetailsController', ['$scope', 'User', '$routeParams',
     function($scope, User, $routeParams) {
+	var now = Math.floor(Date.now() / 1000);
         $scope.reports = [];
         $scope.user = User.get({ id: $routeParams.id },
             function(user) {
-                
                 // Some query strings that we can replace for the bottom
                 // search links we provide on the details page.
                 var name = user.fullname.replace(' ', '+');
@@ -71,6 +71,12 @@ myApp.controller('userDetailsController', ['$scope', 'User', '$routeParams',
                                 .replace(' ', '+');
                 $scope.linkedinsearchstring = name + '+' + company + '+' + email;
                 $scope.namesearchstring = name;
+                var then = user.hiredate;
+		var years = (now - then) / (356.0 * 24.0 * 60.0 * 60.0);
+		if( then == 0 ) {
+			years = 0;
+		}
+		$scope.time_at_company = years;
 
                 // We can now also go through the list of reports and populate that list
                 for (var i = 0; i < user.reports.length; i++) {

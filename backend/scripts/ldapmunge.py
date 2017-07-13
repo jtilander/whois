@@ -5,6 +5,8 @@ import json
 import sys
 import pickle
 from pprint import pprint
+import time
+import datetime
 
 DEBUG = int(os.environ.get("DEBUG", "0"))
 PICKLENAME = '/data/users.pkl'
@@ -16,6 +18,16 @@ TARGETFILE = '/data/users.json'
 def sanitize_phone(candidate):
     return candidate.strip().replace(' ', '').replace('-', '')
 
+def str_to_utc(datestring):
+    if len(datestring.strip()) == 0:
+        return 0
+    try:
+        datestring = datestring.split()[0].strip()
+        dt = datetime.datetime.strptime(datestring, "%Y%m%d%H%M%S.0Z")
+        utc = time.mktime(dt.timetuple())
+        return utc
+    except:
+        return 0
 
 def transform_users(ldap_results):
     users = []
@@ -43,7 +55,9 @@ def transform_users(ldap_results):
         new['office'] = attributes.get('physicalDeliveryOfficeName', [''])[0]
         new['notes'] = ''
         new['tags'] = ['']
-        new['hiredate'] = attributes.get('WhenMailboxCreated', [''])[0]
+
+        timestr = attributes.get('whenCreated', [''])[0]
+        new['hiredate'] = str_to_utc(timestr)
 
         users.append(new)
 
