@@ -40,9 +40,13 @@
             <td>Manager</td>
             <td><a href="#/users/{{user.manager}}">{{user.managername}}</a></td>
         </tr>
+        <tr>
+            <td>Total reports</td>
+            <td>{{user.totalreports}}</td>
+        </tr>
         <tr ng-repeat="report in reports">
-            <td>Report {{$index+1}}</td>
-	    <td><a href="#/users/{{report.username}}">{{ report.fullname }}</a> ({{report.title}}) <span ng-if="report.reports.length > 0">[{{report.reports.length}}]</span> </td>
+            <td>Direct report {{$index+1}}</td>
+	    <td><a href="#/users/{{report.username}}">{{ report.fullname }}</a> ({{report.title}}) <span ng-if="report.reports.length > 0">[{{report.reports.length}}/{{report.totalreports}}]</span> </td>
         </tr>
     </tbody>
 </table>

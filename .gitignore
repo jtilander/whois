@@ -1,3 +1,4 @@
-tmp
+/tmp
+/workbench.sh
+/.env
 *.pyc
-workbench.sh

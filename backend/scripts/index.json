@@ -91,6 +91,10 @@
                     "type": "text",
                     "analyzer": "keyword"
                 },
+                "totalreports": {
+                    "type": "text",
+                    "analyzer": "keyword"
+                },
                 "title": {
                     "type": "text",
                     "analyzer": "autocomplete",
