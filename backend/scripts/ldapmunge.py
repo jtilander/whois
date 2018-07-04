@@ -9,14 +9,16 @@ import time
 import datetime
 
 DEBUG = int(os.environ.get("DEBUG", "0"))
-PICKLENAME = '/data/users.pkl'
+DATADIR = os.environ.get("DATADIR", "/data")
+PICKLENAME = os.path.join(DATADIR, 'users.pkl')
 FORMAT = '%(asctime)-15s %(levelname)-8s %(message)s'
-PHOTO_DIR = '/data/photos'
-TARGETFILE = '/data/users.json'
+PHOTO_DIR = os.path.join(DATADIR, 'photos')
+TARGETFILE = os.path.join(DATADIR, 'users.json')
 
 
 def sanitize_phone(candidate):
     return candidate.strip().replace(' ', '').replace('-', '')
+
 
 def str_to_utc(datestring):
     if len(datestring.strip()) == 0:
@@ -28,6 +30,7 @@ def str_to_utc(datestring):
         return utc
     except:
         return 0
+
 
 def transform_users(ldap_results):
     users = []
@@ -86,6 +89,40 @@ def save_and_update_photos(output_dir, records):
     logging.info("Saved %d photos" % count)
 
 
+def count_reports(lookup, username, seen):
+    """
+    Given a particular username, counts the total reports underneath in
+    the org.
+    """
+    seen.add(username)
+
+    reports = lookup.get(username, [])
+
+    count = len(reports)
+    for report in reports:
+        if report in seen:
+            continue
+        count += count_reports(lookup, report, seen)
+    return count
+
+
+def collect_cumulative_reports(records):
+    """
+        Go through all the users and recursivly sum up how many reports are in
+        the organization below.
+    """
+    lookup = dict()
+    for record in records:
+        username = record['username']
+        reports = record['reports']
+        lookup[username] = reports
+
+    for record in records:
+        username = record['username']
+        total = count_reports(lookup, username, set())
+        record['totalreports'] = total
+
+
 def transform_paths(records):
     """
     Translate all the LDAP paths to just be usernames
@@ -138,9 +175,9 @@ def debug():
 
     photo = attributes.get('thumbnailPhoto', [''])[0]
 
-    print "Now trying to decode this: "
+    print("Now trying to decode this: ")
     pprint(photo)
-    open('/data/image.jpg', 'w').write(photo)
+    open(os.path.join(DATADIR, 'image.jpg'), 'w').write(photo)
 
 
 def main():
@@ -158,6 +195,8 @@ def main():
         os.makedirs(PHOTO_DIR)
     save_and_update_photos(PHOTO_DIR, users)
     transform_paths(users)
+
+    collect_cumulative_reports(users)
 
     jsondata = json.dumps(users, ensure_ascii=False, sort_keys=True, indent=4, separators=(',', ': '))
 
