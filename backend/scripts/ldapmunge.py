@@ -17,6 +17,12 @@ TARGETFILE = os.path.join(DATADIR, 'users.json')
 FLATFILE = os.path.join(DATADIR, 'users.flat')
 
 
+def strip_suffix(candidate, suffix):
+    if candidate.endswith(suffix):
+        return candidate[:-len(suffix)]
+    return candidate
+
+
 def sanitize_phone(candidate):
     return candidate.strip().replace(' ', '').replace('-', '')
 
@@ -29,7 +35,7 @@ def str_to_utc(datestring):
         dt = datetime.datetime.strptime(datestring, "%Y%m%d%H%M%S.0Z")
         utc = time.mktime(dt.timetuple())
         return utc
-    except:
+    except Exception as e:
         return 0
 
 
@@ -49,11 +55,11 @@ def transform_users(ldap_results):
         new['managername'] = ''
         new['reports'] = attributes.get('directReports', [''])
         new['description'] = attributes.get('description', [''])[0]
-        new['address'] = "%s, %s %s, %s" % (
+        new['address'] = strip_suffix("%s, %s %s, %s" % (
             attributes.get('streetAddress', [''])[0],
             attributes.get('l', [''])[0],
             attributes.get('postalCode', [''])[0],
-            attributes.get('c', [''])[0])
+            attributes.get('c', [''])[0]), ", ")
         new['phone'] = sanitize_phone(attributes.get('telephoneNumber', [''])[0])
         new['eid'] = attributes.get('employeeNumber', [''])[0]
         new['office'] = attributes.get('physicalDeliveryOfficeName', [''])[0]
