@@ -77,3 +77,4 @@ curl -X POST http://localhost:9000/api/v1/populate?dump=no
 
 * Sort reports by years of service, descending
 * Gravatar fallback support: https://en.gravatar.com/site/implement/images/
+* Generate diffs and optionally send an email (or store in webform) so that we can track and notify when people leave
