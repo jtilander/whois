@@ -21,7 +21,7 @@
             <td><img widht="96" height="96" src="/photos/{{result.id}}.jpg" /></td>
             <td><a href="#/users/{{result.id}}">{{result.fullname}}</a></td>
             <td><a href="mailto:{{result.email}}">{{result.email}}</a></td>
-            <td><a href="tel:{{result.phone}}">{{result.phone}}</a></td>
+            <td><a href="tel:{{result.phone| phonenumber}}">{{result.phone}}</a></td>
             <td>{{ result.title }}</td>
             <td>{{ result.company }}</td>
             <td><a href="#/users/{{result.manager}}">{{result.managername}}</a></td>

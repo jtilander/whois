@@ -7,6 +7,7 @@ import pickle
 from pprint import pprint
 import time
 import datetime
+import phonenumbers
 
 DEBUG = int(os.environ.get("DEBUG", "0"))
 DATADIR = os.environ.get("DATADIR", "/data")
@@ -24,7 +25,17 @@ def strip_suffix(candidate, suffix):
 
 
 def sanitize_phone(candidate):
-    return candidate.strip().replace(' ', '').replace('-', '')
+    t = candidate.translate(None, ' -!()')
+    if len(t) == 0:
+        return t
+    try:
+        x = phonenumbers.parse(t, None)
+        return phonenumbers.format_number(x, phonenumbers.PhoneNumberFormat.INTERNATIONAL).encode('ascii', 'ignore')
+    except phonenumbers.phonenumberutil.NumberParseException as e:
+        logging.error("Failed to parse phone number \"%s\"" % candidate)
+    except Exception as e:
+        logging.exception(e)
+    return t
 
 
 def str_to_utc(datestring):

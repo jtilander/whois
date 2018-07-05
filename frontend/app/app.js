@@ -99,3 +99,13 @@ myApp.controller('footerController', ['$scope', '$http',
         });
     }
 ]);
+
+myApp.filter('phonenumber', function() {
+    return function(x) {
+        if( x == undefined )
+            return x
+        cleaned = x.replace(/[-()\s]/g, '')
+        console.debug("Cleaning " + x + " to " + cleaned)
+        return cleaned;
+    };
+});
