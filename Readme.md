@@ -8,6 +8,7 @@ Started out as a testbed for elasticsearch and more "modern" web development wit
 
 Easiest way is to deploy this on rancher. There is a sample catalog entry in the ./rancher directory. The rancher template will ask a whole bunch of questions, and after filling them out the services should be launched. 
 
+
 ## Populating data
 
 At first when you start the service, there will be no data loaded. You will need to hit the endpoint to populate data:
@@ -60,3 +61,19 @@ During development you might want to reset the data in elasticsearch, but not ne
 curl -X POST http://localhost:9000/api/v1/populate?dump=no
 ```
 
+## API
+
+|Endpoint.        |Verb|Description|
+|-----------------|----|-----------|
+|/flat            |GET |List all the users in a text file suitable to consume with grep|
+|/json            |GET |Return a raw json dump of the internal database|
+|/api/v1/populate |POST|Trigger a rebuild of the database from AD. ?dump=yes required to actually pull from AD|
+|/api/v1/health   |GET |Obtain some stats|
+|/api/v1/search   |GET |Search for users|
+|/api/v1/users    |GET |Dump users|
+|/api/v1/user/<id>|GET |List individual user details|
+
+## TODO
+
+* Sort reports by years of service, descending
+* Gravatar fallback support: https://en.gravatar.com/site/implement/images/
