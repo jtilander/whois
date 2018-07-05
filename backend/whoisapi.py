@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, send_file, abort
 from flask_restful import reqparse, Resource, Api
 from flask_cors import CORS
 import requests
@@ -8,6 +8,7 @@ import os
 import sys
 import ops
 import datetime
+import logging
 
 app = Flask("whoisapi")
 CORS(app)
@@ -17,6 +18,7 @@ parser = reqparse.RequestParser()
 
 DEBUG = int(os.environ.get('DEBUG', '0'))
 MAX_RESULTS = int(os.environ.get('MAX_RESULTS', '100'))
+DEFAULT_CACHE_TIMEOUT = int(os.environ.get('DEFAULT_CACHE_TIMEOUT', '3600'))
 
 
 class UserList(Resource):
@@ -127,6 +129,24 @@ class Health(Resource):
         result['refreshed'] = updated
 
         return result
+
+
+@app.route(config.api_base_url + "/flat")
+def getflatfile():
+    try:
+        return send_file("/data/users.flat", mimetype="text/plain", cache_timeout=DEFAULT_CACHE_TIMEOUT)
+    except Exception as e:
+        logging.exception("Failed to serve flat file: %s" % str(e))
+        abort(500)
+
+
+@app.route(config.api_base_url + "/json")
+def getjsonfile():
+    try:
+        return send_file("/data/users.json", mimetype="application/json", cache_timeout=DEFAULT_CACHE_TIMEOUT)
+    except Exception as e:
+        logging.exception("Failed to serve json file: %s" % str(e))
+        abort(500)
 
 
 api.add_resource(User, config.api_base_url + '/users/<user_id>')
