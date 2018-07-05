@@ -14,6 +14,7 @@ PICKLENAME = os.path.join(DATADIR, 'users.pkl')
 FORMAT = '%(asctime)-15s %(levelname)-8s %(message)s'
 PHOTO_DIR = os.path.join(DATADIR, 'photos')
 TARGETFILE = os.path.join(DATADIR, 'users.json')
+FLATFILE = os.path.join(DATADIR, 'users.flat')
 
 
 def sanitize_phone(candidate):
@@ -180,6 +181,24 @@ def debug():
     open(os.path.join(DATADIR, 'image.jpg'), 'w').write(photo)
 
 
+def render_json(filename, users):
+    jsondata = json.dumps(users, ensure_ascii=False, sort_keys=True, indent=4, separators=(',', ': '))
+
+    logging.info('Saving json data to %s' % filename)
+    open(filename, 'w').write(jsondata)
+
+
+def render_flat(filename, users):
+    line = '#username:fullname:email:title:manager:company:phone'
+    lines = [line]
+    for user in users:
+        line = '%(username)s:%(fullname)s:%(email)s:%(title)s:%(manager)s:%(company)s:%(phone)s' % user
+        lines.append(line)
+
+    flatfile = '\n'.join(lines)
+    open(filename, 'w').write(flatfile)
+
+
 def main():
     if DEBUG:
         debug()
@@ -198,10 +217,8 @@ def main():
 
     collect_cumulative_reports(users)
 
-    jsondata = json.dumps(users, ensure_ascii=False, sort_keys=True, indent=4, separators=(',', ': '))
-
-    logging.info('Saving json data to %s' % TARGETFILE)
-    open(TARGETFILE, 'w').write(jsondata)
+    render_json(TARGETFILE, users)
+    render_flat(FLATFILE, users)
 
     return 0
 
